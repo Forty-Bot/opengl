@@ -93,38 +93,43 @@ int main() {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 	
-	// Make a rectangle
-	GLfloat vertices[] = {
-		 0.5f,  0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+	// Make Two Triangles
+	GLfloat vertices[][9] = {
+		{	-0.5f,  0.5f, 0.0f,
+			-0.5f, -0.5f, 0.0f,
+			 0.0f,  0.0f, 0.0f,
+		},
+		{
+			 0.0f,  0.0f, 0.0f,
+		 	 0.5f,  0.5f, 0.0f,
+		 	 0.5f, -0.5f, 0.0f
+		}
 	};
 
 	GLuint indices[] = {
-		0, 1, 3,	// First tris
-		1, 2, 3 	// Second tris
+		0, 1, 2
 	};
 
 	// Stick it in a buffer
-	GLuint VBO, VAO, EBO;
-	glGenBuffers(1, &VBO);
+	GLuint VBO[2], VAO[2], EBO;
+	glGenBuffers(2, VBO);
 	glGenBuffers(1, &EBO);
-	glGenVertexArrays(1, &VAO);
+	glGenVertexArrays(2, VAO);
 	
-	glBindVertexArray(VAO);
+	for (int i = 0; i < 2; i++) {
+		glBindVertexArray(VAO[i]);
 	
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[i]), vertices[i], GL_STATIC_DRAW);
 		
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*) 0);
+		glEnableVertexAttribArray(0);
 
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*) 0);
-			glEnableVertexAttribArray(0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	
 	// Wireframe or fill
@@ -135,9 +140,11 @@ int main() {
 		glfwPollEvents();
 	
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);	
+		for (int i = 0; i < 2; i++) {
+			glBindVertexArray(VAO[i]);
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		}
+		glBindVertexArray(0);
 		
 		glfwSwapBuffers(window);
 	}
