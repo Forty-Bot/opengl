@@ -1,0 +1,14 @@
+#ifndef UTIL_H
+#define UTIL_H
+
+#include <string>
+
+#define RES_LOC "@RES_LOC@"
+
+/*
+ * Reads a file into a string
+ * Throws standard io errors
+ */
+std::string read_file(const char *filename);
+
+#endif UTIL_H
